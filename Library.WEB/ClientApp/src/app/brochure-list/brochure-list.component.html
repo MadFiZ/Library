@@ -1,0 +1,62 @@
+<h1>Brochure List</h1>
+<input type="button" value="Add" class="btn btn-default" (click)="add()" />
+<table *ngIf="tableMode; else create" class="table table-striped">
+  <thead>
+    <tr>
+      <td>Name</td>
+      <td>Cover</td>
+      <td>Pages</td>
+      <td></td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let b of brochures">
+      <ng-template [ngIf]="brochure?.id != b.id" [ngIfElse]="edit">
+        <td>{{b?.name}}</td>
+        <td>{{b?.typeOfCover}}</td>
+        <td>{{b?.numberOfPages}}</td>
+        <td>
+          <button class="btn btn-sm btn-primary" (click)="editBrochure(b)">Edit</button>
+          <button class="btn btn-sm btn-danger" (click)="delete(b)">Delete</button>
+        </td>
+      </ng-template>
+    </tr>
+  </tbody>
+</table>
+
+<!--шаблон для редактирования-->
+<ng-template #edit>
+  <td>
+    <input type="text" [(ngModel)]="brochure.name" class="form-control" />
+  </td>
+  <td>
+    <input type="text" [(ngModel)]="brochure.typeOfCover" class="form-control" />
+  </td>
+  <td>
+    <input type="text" [(ngModel)]="brochure.numberOfPages" class="form-control" />
+  </td>
+  <td>
+    <input type="button" value="Save" (click)="save()" class="btn btn-sm btn-success" />
+    <input type="button" value="Cancel" (click)="cancel()" class="btn btn-sm btn-warning" />
+  </td>
+</ng-template>
+
+<!--шаблон для добавления-->
+<ng-template #create>
+  <div class="form-group">
+    <label>Brochure</label>
+    <input type="text" [(ngModel)]="brochure.name" class="form-control" />
+  </div>
+  <div class="form-group">
+    <label>Cover</label>
+    <input type="text" [(ngModel)]="brochure.typeOfCover" class="form-control" />
+  </div>
+  <div class="form-group">
+    <label>Pages</label>
+    <input type="text" [(ngModel)]="brochure.numberOfPages" class="form-control" />
+  </div>
+  <div>
+    <input type="button" value="Save" (click)="save()" class="btn btn-success" />
+    <input type="button" value="Cancel" (click)="cancel()" class="btn btn-warning" />
+  </div>
+</ng-template>

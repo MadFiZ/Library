@@ -13,6 +13,8 @@ import { MagazineListComponent } from './magazine-list/magazine-list.component';
 import { MagazineService } from '../app/magazine-list/magazine.service';
 import { PublicationService } from '../app/publication-list/publication.service';
 import { PublicationListComponent } from './publication-list/publication-list.component';
+import { BrochureListComponent } from './brochure-list/brochure-list.component';
+import { BrochureService } from '../app/brochure-list/brochure.service';
 
 @NgModule({
   declarations: [
@@ -20,7 +22,8 @@ import { PublicationListComponent } from './publication-list/publication-list.co
     NavMenuComponent,
     BookListComponent,
     MagazineListComponent,
-    PublicationListComponent
+    PublicationListComponent,
+    BrochureListComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -29,10 +32,11 @@ import { PublicationListComponent } from './publication-list/publication-list.co
     RouterModule.forRoot([
       { path: '', component: PublicationListComponent, pathMatch: 'full' },
       { path: 'book-list', component: BookListComponent },
-      { path: 'magazine-list', component: MagazineListComponent},
+      { path: 'magazine-list', component: MagazineListComponent },
+      { path: 'brochure-list', component: BrochureListComponent },
     ])
   ],
-  providers: [BookService, windowProvider, MagazineService, PublicationService],
+  providers: [BookService, windowProvider, MagazineService, PublicationService, BrochureService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

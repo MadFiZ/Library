@@ -2,10 +2,13 @@
 using Library.ViewModels.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Library.WEB.Controllers
 {
+    [Produces("application/json")]
+    [Route("api/brochures")]
     public class BrochureController : Controller
     {
         private readonly IService<BrochureViewModel> _brochureService;
@@ -15,62 +18,58 @@ namespace Library.WEB.Controllers
             _brochureService = brochureService;
         }
 
-        public ActionResult Index()
+        [HttpGet]
+        public IEnumerable<BrochureViewModel> GetBrochures()
         {
-            return View();
+            var brochures = _brochureService.GetItems().ToList();
+            return brochures;
         }
 
-        public ActionResult GetBrochures()
+        [HttpGet("{id}")]
+        public IActionResult GetBrochure([FromRoute] int id)
         {
-            var data = _brochureService.GetItems().OrderByDescending(b => b.Name).Select(b => new
+            if (!ModelState.IsValid)
             {
-                ID = b.Id,
-                b.Name,
-                TypeOfCover = b.TypeOfCover.ToString(),
-                b.NumberOfPages,
-            }).ToList();
-            return Json(data);
+                return BadRequest(ModelState);
+            }
+
+            var brochure = _brochureService.GetItem(id);
+
+            if (brochure == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(brochure);
         }
 
-        public ActionResult AddBrochure()
+
+        [HttpPut("{id}")]
+        public IActionResult PutBrochure([FromRoute] int id, [FromBody] BrochureViewModel brochure)
         {
-            return View();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != brochure.Id)
+            {
+                return BadRequest();
+            }
+            _brochureService.Update(brochure);
+
+            return NoContent();
         }
 
         [HttpPost]
-        public ActionResult AddBrochure(BrochureViewModel brochureViewModel)
+        public IActionResult PostBrochure([FromBody]BrochureViewModel brochure)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
-                {
-                    _brochureService.Insert(brochureViewModel);
-                }
-                return RedirectToAction("Index");
+                _brochureService.Insert(brochure);
+                return Ok(brochure);
             }
-            catch
-            {
-                return View();
-            }
-        }
-
-        public ActionResult EditBrochure(int id)
-        {
-            return View(_brochureService.GetItem(id));
-        }
-
-        [HttpPost]
-        public ActionResult EditBrochure(int id, BrochureViewModel brochureViewModel)
-        {
-            try
-            {
-                _brochureService.Update(brochureViewModel);
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            return BadRequest(ModelState);
         }
 
         [HttpDelete("{id}")]

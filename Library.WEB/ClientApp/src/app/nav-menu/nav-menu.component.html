@@ -27,6 +27,11 @@
             <span class='glyphicon glyphicon-home'></span> Magazine List
           </a>
         </li>
+        <li [routerLinkActive]='["link-active"]'>
+          <a [routerLink]='["/brochure-list"]' (click)='collapse()'>
+            <span class='glyphicon glyphicon-home'></span> Brochure List
+          </a>
+        </li>
         <!--<li [routerLinkActive]='["link-active"]'>
       <a [routerLink]='["/counter"]' (click)='collapse()'>
           <span class='glyphicon glyphicon-education'></span> Counter
