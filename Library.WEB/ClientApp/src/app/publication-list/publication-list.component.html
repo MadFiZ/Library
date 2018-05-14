@@ -1,24 +1,16 @@
-<h1>Magazine List</h1>
-<input type="button" value="Add" class="btn btn-default" (click)="add()" />
+<h1>Publication List</h1>
 <table *ngIf="tableMode; else create" class="table table-striped">
   <thead>
     <tr>
       <td>Name</td>
-      <td>Number</td>
-      <td>Publishing Year</td>
-      <td></td>
+      <td>Type</td>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let m of magazines">
-      <ng-template [ngIf]="magazine?.id != m.id" [ngIfElse]="edit">
-        <td>{{m?.name}}</td>
-        <td>{{m?.number}}</td>
-        <td>{{m?.yearOfPublishing}}</td>
-        <td>
-          <button class="btn btn-sm btn-primary" (click)="editMagazine(m)">Edit</button>
-          <button class="btn btn-sm btn-danger" (click)="delete(m)">Delete</button>
-        </td>
+    <tr *ngFor="let p of publications">
+      <ng-template [ngIf]="publication?.id != p.id" [ngIfElse]="edit">
+        <td>{{p?.name}}</td>
+        <td>{{p?.type}}</td>
       </ng-template>
     </tr>
   </tbody>

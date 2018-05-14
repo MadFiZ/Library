@@ -23,13 +23,21 @@ namespace Library.BLL.Service
             var books = _bookService.GetItems();
             foreach (var book in books)
             {
-                PublicationViewModel publication = new PublicationViewModel() { Name = book.Name, Type = ty} 
-                publications.Add()
+                PublicationViewModel publication = new PublicationViewModel() { Id = book.Id, Name = book.Name, Type = book.GetType().Name.Replace("ViewModel", "") };
+                publications.Add(publication);
             }
             var brochures = _brochureService.GetItems();
-            publications.AddRange(brochures);
+            foreach (var brochure in brochures)
+            {
+                PublicationViewModel publication = new PublicationViewModel() { Id = brochure.Id, Name = brochure.Name, Type = brochure.GetType().Name.Replace("ViewModel", "") };
+                publications.Add(publication);
+            }
             var magazines = _magazineService.GetItems();
-            publications.AddRange(magazines);
+            foreach (var magazine in magazines)
+            {
+                PublicationViewModel publication = new PublicationViewModel() { Id = magazine.Id, Name = magazine.Name, Type = magazine.GetType().Name.Replace("ViewModel", "") };
+                publications.Add(publication);
+            }
             return publications;
         }
     }

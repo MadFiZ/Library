@@ -27,7 +27,8 @@ import { PublicationListComponent } from './publication-list/publication-list.co
     HttpClientModule,
     FormsModule,
     RouterModule.forRoot([
-      { path: '', component: BookListComponent, pathMatch: 'full' },
+      { path: '', component: PublicationListComponent, pathMatch: 'full' },
+      { path: 'book-list', component: BookListComponent },
       { path: 'magazine-list', component: MagazineListComponent},
     ])
   ],

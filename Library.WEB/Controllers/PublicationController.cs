@@ -1,9 +1,13 @@
 ﻿using Library.BLL.Service;
+using Library.ViewModels.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Library.WEB.Controllers
 {
+    [Produces("application/json")]
+    [Route("api/publications")]
     public class PublicationController : Controller
     {
         private readonly PublicationService _libraryService;
@@ -16,18 +20,9 @@ namespace Library.WEB.Controllers
         [HttpGet]
         public IEnumerable<PublicationViewModel> GetBooks()
         {
-            var data = _libraryService.GetPublications().ToList()
-                ID = b.Id,
-                b.Name,
-                Type = b.GetType().Name.Replace("ViewModel", "")
-            }).AsEnumerable();
-            return Json(data);
+            var data = _libraryService.GetPublications().ToList();
+            return data;
         }
 
-  
-        {
-            var books = _bookService.GetItems().ToList();
-            return books;
-        }
     }
 }
