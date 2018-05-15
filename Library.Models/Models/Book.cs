@@ -8,12 +8,12 @@ namespace Library.Models.Models
 
         public int YearOfPublishing { get; set; }
 
-        /*public virtual ICollection<PublicationHouseBooks> PublicationHouses { get; set; }
+        public virtual ICollection<PublicationHouseBooks> PublicationHouses { get; set; }
 
         public Book()
         {
             PublicationHouses = new List<PublicationHouseBooks>();
-        }*/
+        }
 
         public override string ToString()
         {

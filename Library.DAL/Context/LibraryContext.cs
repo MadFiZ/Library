@@ -14,20 +14,10 @@ namespace Library.DAL.Context
             : base(options)
         {}
 
-        /*protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<PublicationHouseBooks>()
-                .HasKey(t => new { t.BookId, t.PublicationHouseId });
-
-            modelBuilder.Entity<PublicationHouseBooks>()
-                .HasOne(sc => sc.Book)
-                .WithMany(s => s.PublicationHouses)
-                .HasForeignKey(sc => sc.BookId);
-
-            modelBuilder.Entity<PublicationHouseBooks>()
-                .HasOne(sc => sc.PublicationHouse)
-                .WithMany(c => c.Books)
-                .HasForeignKey(sc => sc.PublicationHouseId);
-        }*/
+          modelBuilder.Entity<PublicationHouseBooks>()
+        .HasKey(t => new { t.PublicationHouseId, t.BookId });
+        }
     }
 }
