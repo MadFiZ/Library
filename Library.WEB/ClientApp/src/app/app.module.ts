@@ -15,6 +15,8 @@ import { PublicationService } from '../app/publication-list/publication.service'
 import { PublicationListComponent } from './publication-list/publication-list.component';
 import { BrochureListComponent } from './brochure-list/brochure-list.component';
 import { BrochureService } from '../app/brochure-list/brochure.service';
+import { HouseListComponent } from './house-list/house-list.component';
+import { HousesService } from '../app/house-list/houses.service';
 
 @NgModule({
   declarations: [
@@ -24,6 +26,7 @@ import { BrochureService } from '../app/brochure-list/brochure.service';
     MagazineListComponent,
     PublicationListComponent,
     BrochureListComponent,
+    HouseListComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -34,9 +37,10 @@ import { BrochureService } from '../app/brochure-list/brochure.service';
       { path: 'book-list', component: BookListComponent },
       { path: 'magazine-list', component: MagazineListComponent },
       { path: 'brochure-list', component: BrochureListComponent },
+      { path: 'house-list', component: HouseListComponent },
     ])
   ],
-  providers: [BookService, windowProvider, MagazineService, PublicationService, BrochureService],
+  providers: [BookService, windowProvider, MagazineService, PublicationService, BrochureService, HousesService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -5,6 +5,7 @@ using Library.Models.Models;
 using Library.ViewModels.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Library.BLL.Service
 {
@@ -22,21 +23,9 @@ namespace Library.BLL.Service
             try
             {
                 var magazinesFromDb = _magazineRepository.GetAll();
-                var magazines = Mapper.Map<IEnumerable<Magazine>, IEnumerable<MagazineViewModel>>(magazinesFromDb);
+                var magazines =
+                   Mapper.Map<IEnumerable<Magazine>, IEnumerable<MagazineViewModel>>(magazinesFromDb);
                 return magazines;
-            }
-            catch(Exception exception)
-            {
-                throw exception;
-            }
-        }
-
-        public void Insert(MagazineViewModel magazineViewModel)
-        {
-            try
-            {
-                Magazine magazine = Mapper.Map<MagazineViewModel, Magazine>(magazineViewModel);
-                _magazineRepository.Insert(magazine);
             }
             catch (Exception exception)
             {
@@ -44,39 +33,137 @@ namespace Library.BLL.Service
             }
         }
 
+        public async Task<IEnumerable<MagazineViewModel>> GetItemsAsync()
+        {
+            try
+            {
+                var magazinesFromDb = await _magazineRepository.GetAllAsync();
+                var magazines =
+                   Mapper.Map<IEnumerable<Magazine>, IEnumerable<MagazineViewModel>>(magazinesFromDb);
+                return magazines;
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
 
         public MagazineViewModel GetItem(int id)
         {
-            try { 
-            var magazineFromDb = _magazineRepository.Get(id);
-            var magazine = Mapper.Map<Magazine, MagazineViewModel>(magazineFromDb);
-            return magazine;
-        }
-            catch(Exception exception)
-            {
-                throw exception;
-            }
-}
-
-        public void Update(MagazineViewModel magazineViewModel)
-        {
             try
             {
-                Magazine magazine = Mapper.Map<MagazineViewModel, Magazine>(magazineViewModel);
-                _magazineRepository.Update(magazine);
+                var magazineFromDb = _magazineRepository.Get(id);
+                var magazine = Mapper.Map<Magazine, MagazineViewModel>(magazineFromDb);
+                return magazine;
             }
             catch (Exception exception)
             {
                 throw exception;
             }
         }
+
+        public async Task<MagazineViewModel> GetItemAsync(int id)
+        {
+            try
+            {
+                var magazineFromDb = await _magazineRepository.GetAsync(id);
+                var magazine = Mapper.Map<Magazine, MagazineViewModel>(magazineFromDb);
+                return magazine;
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public void Insert(MagazineViewModel addMagazine)
+        {
+            try
+            {
+                var magazineToAdd = Mapper.Map<MagazineViewModel, Magazine>(addMagazine);
+                _magazineRepository.Add(magazineToAdd);
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public async Task<bool> InsertAsync(MagazineViewModel addMagazine)
+        {
+            try
+            {
+                var magazineToAdd = Mapper.Map<MagazineViewModel, Magazine>(addMagazine);
+                bool success = await _magazineRepository.AddAsync(magazineToAdd);
+                if (success == true)
+                {
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public void Update(MagazineViewModel magazine)
+        {
+            try
+            {
+                var magazineToUpdate = Mapper.Map<MagazineViewModel, Magazine>(magazine);
+                _magazineRepository.UpdateAsync(magazineToUpdate, magazineToUpdate.Id);
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public async Task<bool> UpdateAsync(MagazineViewModel magazine)
+        {
+            try
+            {
+                var magazineToUpdate = Mapper.Map<MagazineViewModel, Magazine>(magazine);
+                bool success = await _magazineRepository.UpdateAsync(magazineToUpdate, magazineToUpdate.Id);
+                if (success == true)
+                {
+                    return true;
+                }
+                return false;
+
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
 
         public void Delete(int id)
         {
             try
             {
                 Magazine magazine = _magazineRepository.Get(id);
-                _magazineRepository.Remove(magazine);
+                _magazineRepository.DeleteAsync(magazine);
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            try
+            {
+                Magazine magazine = _magazineRepository.Get(id);
+                bool success = await _magazineRepository.DeleteAsync(magazine);
+                if (success == true)
+                {
+                    return true;
+                }
+                return false;
             }
             catch (Exception exception)
             {

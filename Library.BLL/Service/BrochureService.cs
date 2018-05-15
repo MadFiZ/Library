@@ -3,7 +3,9 @@ using Library.BLL.Interfaces;
 using Library.DAL.Interfaces;
 using Library.Models.Models;
 using Library.ViewModels.ViewModels;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Library.BLL.Service
 {
@@ -18,35 +20,155 @@ namespace Library.BLL.Service
 
         public IEnumerable<BrochureViewModel> GetItems()
         {
-            var brochuresFromDb = _brochureRepository.GetAll();
-            var brochures = Mapper.Map<IEnumerable<Brochure>, IEnumerable<BrochureViewModel>>(brochuresFromDb);
-            return brochures;
+            try
+            {
+                var brochuresFromDb = _brochureRepository.GetAll();
+                var brochures =
+                   Mapper.Map<IEnumerable<Brochure>, IEnumerable<BrochureViewModel>>(brochuresFromDb);
+                return brochures;
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public async Task<IEnumerable<BrochureViewModel>> GetItemsAsync()
+        {
+            try
+            {
+                var brochuresFromDb = await _brochureRepository.GetAllAsync();
+                var brochures =
+                   Mapper.Map<IEnumerable<Brochure>, IEnumerable<BrochureViewModel>>(brochuresFromDb);
+                return brochures;
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
         }
 
         public BrochureViewModel GetItem(int id)
         {
-            var brochureFromDb = _brochureRepository.Get(id);
-            var brochure = Mapper.Map<Brochure, BrochureViewModel>(brochureFromDb);
-            return brochure;
+            try
+            {
+                var brochureFromDb = _brochureRepository.Get(id);
+                var brochure = Mapper.Map<Brochure, BrochureViewModel>(brochureFromDb);
+                return brochure;
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
         }
 
-        public void Insert(BrochureViewModel brochureViewModel)
+        public async Task<BrochureViewModel> GetItemAsync(int id)
         {
-            Brochure brochure = Mapper.Map<BrochureViewModel, Brochure>(brochureViewModel);
-            _brochureRepository.Insert(brochure);
+            try
+            {
+                var brochureFromDb = await _brochureRepository.GetAsync(id);
+                var brochure = Mapper.Map<Brochure, BrochureViewModel>(brochureFromDb);
+                return brochure;
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
         }
 
-        public void Update(BrochureViewModel brochureViewModel)
+        public void Insert(BrochureViewModel addBrochure)
         {
-            Brochure brochure = Mapper.Map<BrochureViewModel, Brochure>(brochureViewModel);
-            _brochureRepository.Update(brochure);
+            try
+            {
+                var brochureToAdd = Mapper.Map<BrochureViewModel, Brochure>(addBrochure);
+                _brochureRepository.Add(brochureToAdd);
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public async Task<bool> InsertAsync(BrochureViewModel addBrochure)
+        {
+            try
+            {
+                var brochureToAdd = Mapper.Map<BrochureViewModel, Brochure>(addBrochure);
+                bool success = await _brochureRepository.AddAsync(brochureToAdd);
+                if (success == true)
+                {
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public void Update(BrochureViewModel brochure)
+        {
+            try
+            {
+                var brochureToUpdate = Mapper.Map<BrochureViewModel, Brochure>(brochure);
+                _brochureRepository.UpdateAsync(brochureToUpdate, brochureToUpdate.Id);
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public async Task<bool> UpdateAsync(BrochureViewModel brochure)
+        {
+            try
+            {
+                var brochureToUpdate = Mapper.Map<BrochureViewModel, Brochure>(brochure);
+                bool success = await _brochureRepository.UpdateAsync(brochureToUpdate, brochureToUpdate.Id);
+                if (success == true)
+                {
+                    return true;
+                }
+                return false;
+
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
         }
 
 
         public void Delete(int id)
         {
-            Brochure brochure = _brochureRepository.Get(id);
-            _brochureRepository.Remove(brochure);
+            try
+            {
+                Brochure brochure = _brochureRepository.Get(id);
+                _brochureRepository.DeleteAsync(brochure);
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            try
+            {
+                Brochure brochure = _brochureRepository.Get(id);
+                bool success = await _brochureRepository.DeleteAsync(brochure);
+                if (success == true)
+                {
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
         }
     }
 }

@@ -1,9 +1,11 @@
 ﻿using Library.BLL.Interfaces;
 using Library.ViewModels.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Library.WEB.Controllers
 {
@@ -21,19 +23,19 @@ namespace Library.WEB.Controllers
         [HttpGet]
         public IEnumerable<BrochureViewModel> GetBrochures()
         {
-            var brochures = _brochureService.GetItems().ToList();
+            var brochures = _brochureService.GetItems();
             return brochures;
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetBrochure([FromRoute] int id)
+        public async Task<IActionResult> GetBrochure([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var brochure = _brochureService.GetItem(id);
+            var brochure = await _brochureService.GetItemAsync(id);
 
             if (brochure == null)
             {
@@ -43,9 +45,8 @@ namespace Library.WEB.Controllers
             return Ok(brochure);
         }
 
-
         [HttpPut("{id}")]
-        public IActionResult PutBrochure([FromRoute] int id, [FromBody] BrochureViewModel brochure)
+        public async Task<IActionResult> PutBrochure([FromRoute] int id, [FromBody] BrochureViewModel brochure)
         {
             if (!ModelState.IsValid)
             {
@@ -56,24 +57,39 @@ namespace Library.WEB.Controllers
             {
                 return BadRequest();
             }
-            _brochureService.Update(brochure);
+
+            try
+            {
+                await _brochureService.UpdateAsync(brochure);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!BrochureExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             return NoContent();
         }
 
         [HttpPost]
-        public IActionResult PostBrochure([FromBody]BrochureViewModel brochure)
+        public async Task<IActionResult> PostBrochure([FromBody]BrochureViewModel brochure)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _brochureService.Insert(brochure);
-                return Ok(brochure);
+                return BadRequest(ModelState);
             }
-            return BadRequest(ModelState);
+            await _brochureService.InsertAsync(brochure);
+            return Ok(brochure);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteBrochure([FromRoute] int id)
+        public async Task<IActionResult> DeleteBrochure([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
@@ -84,8 +100,13 @@ namespace Library.WEB.Controllers
             {
                 return NotFound();
             }
-            _brochureService.Delete(id);
+            await _brochureService.DeleteAsync(id);
             return Ok(brochure);
+        }
+
+        private bool BrochureExists(int id)
+        {
+            return _brochureService.GetItems().Any(e => e.Id == id);
         }
     }
 }

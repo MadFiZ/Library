@@ -5,12 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Library.DAL.Repository
 {
     public class Repository<T> : IRepository<T> where T : BaseEntity
     {
-        protected readonly LibraryContext _context;
+        protected LibraryContext _context;
         private DbSet<T> _entities;
 
         public Repository(LibraryContext context)
@@ -19,31 +20,55 @@ namespace Library.DAL.Repository
             _entities = context.Set<T>();
         }
 
-        public IEnumerable<T> GetAll()
+        public IQueryable<T> GetAll()
         {
             try
             {
-                return _entities.AsEnumerable();
+                return _entities;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                throw e;
+                throw exception;
             }
         }
 
-        public T Get(int id)
+        public virtual async Task<ICollection<T>> GetAllAsync()
         {
             try
             {
-                return _entities.SingleOrDefault(s => s.Id == id);
+                return await _entities.ToListAsync();
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                throw e;
+                throw exception;
             }
         }
 
-        public void Insert(T entity)
+        public virtual T Get(int id)
+        {
+            try
+            {
+                return _entities.Find(id);
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public virtual async Task<T> GetAsync(int id)
+        {
+            try
+            {
+                return await _entities.FindAsync(id);
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public virtual void Add(T entity)
         {
             try
             {
@@ -52,15 +77,30 @@ namespace Library.DAL.Repository
                     throw new ArgumentNullException("entity");
                 }
                 _entities.Add(entity);
-                SaveChanges();
+                _context.SaveChanges();
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                throw e;
+                throw exception;
             }
         }
 
-        public void Update(T entity)
+        public virtual async Task<bool> AddAsync(T entity)
+        {
+            try
+            {
+                _entities.Add(entity);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+
+        }
+
+        public virtual void Update(T entity, object key)
         {
             try
             {
@@ -68,38 +108,111 @@ namespace Library.DAL.Repository
                 {
                     throw new ArgumentNullException("entity");
                 }
-                _context.Entry(entity).State = EntityState.Modified;
-                SaveChanges();
+                T exist = _entities.Find(key);
+                if (exist != null)
+                {
+                    _context.Entry(exist).CurrentValues.SetValues(entity);
+                    _context.SaveChanges();
+                }
+
             }
-            catch (Exception e)
+             catch (Exception exception)
             {
-                throw e;
+                throw exception;
             }
         }
 
-        public void Remove(T entity)
+        public virtual async Task<bool> UpdateAsync(T entity, object key)
+        {
+            try
+            {
+                if (entity == null)
+                {
+                    throw new ArgumentNullException("entity");
+                }
+                T exist = await _entities.FindAsync(key);
+                if (exist != null)
+                {
+                    _context.Entry(exist).CurrentValues.SetValues(entity);
+                    await _context.SaveChangesAsync();
+                }
+                return true;
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public virtual void Delete(T entity)
         {
             try
             {
                 _entities.Remove(entity);
-                SaveChanges();
+                _context.SaveChanges();
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                throw e;
+                throw exception;
             }
         }
 
-        public void SaveChanges()
+        public virtual async Task<bool> DeleteAsync(T entity)
+        {
+            try
+            {
+                _entities.Remove(entity);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public virtual void Save()
         {
             try
             {
                 _context.SaveChanges();
             }
-            catch(Exception e)
+            catch (Exception exception)
             {
-                throw e;
+                throw exception;
             }
+        }
+
+        public async virtual Task<bool> SaveAsync()
+        {
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        private bool disposed = false;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    _context.Dispose();
+                }
+                this.disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

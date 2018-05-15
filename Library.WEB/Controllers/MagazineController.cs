@@ -1,8 +1,10 @@
 ﻿using Library.BLL.Interfaces;
 using Library.ViewModels.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Library.WEB.Controllers
 {
@@ -20,19 +22,19 @@ namespace Library.WEB.Controllers
         [HttpGet]
         public IEnumerable<MagazineViewModel> GetMagazines()
         {
-            var magazines = _magazineService.GetItems().ToList();
+            var magazines = _magazineService.GetItems();
             return magazines;
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetMagazine([FromRoute] int id)
+        public async Task<IActionResult> GetMagazine([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var magazine = _magazineService.GetItem(id);
+            var magazine = await _magazineService.GetItemAsync(id);
 
             if (magazine == null)
             {
@@ -42,9 +44,8 @@ namespace Library.WEB.Controllers
             return Ok(magazine);
         }
 
-
         [HttpPut("{id}")]
-        public IActionResult PutMagazine([FromRoute] int id, [FromBody] MagazineViewModel magazine)
+        public async Task<IActionResult> PutMagazine([FromRoute] int id, [FromBody] MagazineViewModel magazine)
         {
             if (!ModelState.IsValid)
             {
@@ -55,36 +56,56 @@ namespace Library.WEB.Controllers
             {
                 return BadRequest();
             }
-            _magazineService.Update(magazine);
+
+            try
+            {
+                await _magazineService.UpdateAsync(magazine);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!MagazineExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             return NoContent();
         }
 
         [HttpPost]
-        public IActionResult PostMagazine([FromBody]MagazineViewModel magazine)
-        {
-            if (ModelState.IsValid)
-            {
-                _magazineService.Insert(magazine);
-                return Ok(magazine);
-            }
-            return BadRequest(ModelState);
-        }
-
-    [HttpDelete("{id}")]
-        public IActionResult DeleteMagazine([FromRoute] int id)
+        public async Task<IActionResult> PostMagazine([FromBody]MagazineViewModel magazine)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            MagazineViewModel magazine = _magazineService.GetItem(id);
+            await _magazineService.InsertAsync(magazine);
+            return Ok(magazine);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteMagazine([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var magazine = _magazineService.GetItem(id);
             if (magazine == null)
             {
                 return NotFound();
             }
-            _magazineService.Delete(id);
+            await _magazineService.DeleteAsync(id);
             return Ok(magazine);
+        }
+
+        private bool MagazineExists(int id)
+        {
+            return _magazineService.GetItems().Any(e => e.Id == id);
         }
     }
 }

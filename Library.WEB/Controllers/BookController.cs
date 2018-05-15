@@ -2,6 +2,7 @@ using Library.BLL.Interfaces;
 using Library.BLL.Service;
 using Library.ViewModels.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,19 +27,19 @@ namespace Library.WEB.Controllers
         [HttpGet]
         public IEnumerable<BookViewModel> GetBooks()
         {
-            var books = _bookService.GetItems().ToList();
+            var books = _bookService.GetItems();
             return books;
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetBook([FromRoute] int id)
+        public async Task<IActionResult> GetBook([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var book = _bookService.GetItem(id);
+            var book = await _bookService.GetItemAsync(id);
 
             if (book == null)
             {
@@ -79,7 +80,7 @@ namespace Library.WEB.Controllers
         }*/
 
         [HttpPut("{id}")]
-        public IActionResult PutBook([FromRoute] int id, [FromBody] BookViewModel book)
+        public async Task<IActionResult> PutBook([FromRoute] int id, [FromBody] BookViewModel book)
         {
             if (!ModelState.IsValid)
             {
@@ -90,32 +91,56 @@ namespace Library.WEB.Controllers
             {
                 return BadRequest();
             }
-            _bookService.Update(book);
+
+            try
+            {
+                await _bookService.UpdateAsync(book);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!BookExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             return NoContent();
         }
 
         [HttpPost]
-        public IActionResult PostBook([FromBody]BookViewModel book)
+        public async Task<IActionResult> PostBook([FromBody]BookViewModel book)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _bookService.Insert(book);
-                return Ok(book);
+                return BadRequest(ModelState);
             }
-            return BadRequest(ModelState);
+            await _bookService.InsertAsync(book);
+            return Ok(book);
         }
 
-        // DELETE: api/Books/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteBook([FromRoute] int id)
+        public async Task<IActionResult> DeleteBook([FromRoute] int id)
         {
-            var book = _bookService.GetItem(id);
-            if (book != null)
+            if (!ModelState.IsValid)
             {
-                _bookService.Delete(id);
+                return BadRequest(ModelState);
             }
+            var book = _bookService.GetItem(id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+            await _bookService.DeleteAsync(id);
             return Ok(book);
+        }
+
+        private bool BookExists(int id)
+        {
+            return _bookService.GetItems().Any(e => e.Id == id);
         }
     }
 }

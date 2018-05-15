@@ -5,6 +5,7 @@ using Library.Models.Models;
 using Library.ViewModels.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Library.BLL.Service
 {
@@ -22,8 +23,24 @@ namespace Library.BLL.Service
             try
             {
                 var housesFromDb = _houseRepository.GetAll();
-                var publicationHouses = Mapper.Map<IEnumerable<PublicationHouse>, IEnumerable<PublicationHouseViewModel>>(housesFromDb);
-                return publicationHouses;
+                var houses =
+                   Mapper.Map<IEnumerable<PublicationHouse>, IEnumerable<PublicationHouseViewModel>>(housesFromDb);
+                return houses;
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public async Task<IEnumerable<PublicationHouseViewModel>> GetItemsAsync()
+        {
+            try
+            {
+                var housesFromDb = await _houseRepository.GetAllAsync();
+                var houses =
+                   Mapper.Map<IEnumerable<PublicationHouse>, IEnumerable<PublicationHouseViewModel>>(housesFromDb);
+                return houses;
             }
             catch (Exception exception)
             {
@@ -36,8 +53,8 @@ namespace Library.BLL.Service
             try
             {
                 var houseFromDb = _houseRepository.Get(id);
-                var publicationHouse = Mapper.Map<PublicationHouse, PublicationHouseViewModel>(houseFromDb);
-                return publicationHouse;
+                var house = Mapper.Map<PublicationHouse, PublicationHouseViewModel>(houseFromDb);
+                return house;
             }
             catch (Exception exception)
             {
@@ -45,13 +62,13 @@ namespace Library.BLL.Service
             }
         }
 
-
-        public void Insert(PublicationHouseViewModel publicationHouseViewModel)
+        public async Task<PublicationHouseViewModel> GetItemAsync(int id)
         {
             try
             {
-                PublicationHouse publicationHouse = Mapper.Map<PublicationHouseViewModel, PublicationHouse>(publicationHouseViewModel);
-                _houseRepository.Insert(publicationHouse);
+                var houseFromDb = await _houseRepository.GetAsync(id);
+                var house = Mapper.Map<PublicationHouse, PublicationHouseViewModel>(houseFromDb);
+                return house;
             }
             catch (Exception exception)
             {
@@ -59,25 +76,94 @@ namespace Library.BLL.Service
             }
         }
 
-        public void Update(PublicationHouseViewModel publicationHouseViewModel)
+        public void Insert(PublicationHouseViewModel addPublicationHouse)
         {
             try
             {
-                PublicationHouse publicationHouse = Mapper.Map<PublicationHouseViewModel, PublicationHouse>(publicationHouseViewModel);
-                _houseRepository.Update(publicationHouse);
+                var houseToAdd = Mapper.Map<PublicationHouseViewModel, PublicationHouse>(addPublicationHouse);
+                _houseRepository.Add(houseToAdd);
             }
             catch (Exception exception)
             {
                 throw exception;
             }
         }
+
+        public async Task<bool> InsertAsync(PublicationHouseViewModel addPublicationHouse)
+        {
+            try
+            {
+                var houseToAdd = Mapper.Map<PublicationHouseViewModel, PublicationHouse>(addPublicationHouse);
+                bool success = await _houseRepository.AddAsync(houseToAdd);
+                if (success == true)
+                {
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public void Update(PublicationHouseViewModel house)
+        {
+            try
+            {
+                var houseToUpdate = Mapper.Map<PublicationHouseViewModel, PublicationHouse>(house);
+                _houseRepository.UpdateAsync(houseToUpdate, houseToUpdate.Id);
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public async Task<bool> UpdateAsync(PublicationHouseViewModel house)
+        {
+            try
+            {
+                var houseToUpdate = Mapper.Map<PublicationHouseViewModel, PublicationHouse>(house);
+                bool success = await _houseRepository.UpdateAsync(houseToUpdate, houseToUpdate.Id);
+                if (success == true)
+                {
+                    return true;
+                }
+                return false;
+
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
 
         public void Delete(int id)
         {
             try
             {
                 PublicationHouse house = _houseRepository.Get(id);
-                _houseRepository.Remove(house);
+                _houseRepository.DeleteAsync(house);
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            try
+            {
+                PublicationHouse house = _houseRepository.Get(id);
+                bool success = await _houseRepository.DeleteAsync(house);
+                if (success == true)
+                {
+                    return true;
+                }
+                return false;
             }
             catch (Exception exception)
             {

@@ -2,96 +2,111 @@
 using Library.BLL.Service;
 using Library.ViewModels.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Library.WEB.Controllers
 {
+    [Produces("application/json")]
+    [Route("api/houses")]
     public class PublicationHouseController : Controller
     {
         private readonly IService<PublicationHouseViewModel> _houseService;
-        private readonly IService<BookViewModel> _bookService;
-        private readonly AdditionalService _additionalService;
 
-        public PublicationHouseController(IService<PublicationHouseViewModel> houseService, IService<BookViewModel> bookService, AdditionalService additionalService)
+        public PublicationHouseController(IService<PublicationHouseViewModel> houseService)
         {
             _houseService = houseService;
-            _bookService = bookService;
-            _additionalService = additionalService;
         }
 
-        public ActionResult Index()
+        [HttpGet]
+        public IEnumerable<PublicationHouseViewModel> GetPublicationHouses()
         {
-            return View();
+            var houses = _houseService.GetItems();
+            return houses;
         }
 
-        /*public ActionResult GetPublicationHouses()
-        {
-            var data = _houseService.GetItems().OrderByDescending(p => p.Name).Select(P => new
-            {
-                ID = P.Id,
-                P.Name,
-                P.Adress,
-                Books = _additionalService.GetBooksNames(P.Books)
-            }).ToList();
-            return Json(data);
-        }*/
-
-        public ActionResult AddPublicationHouse()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public ActionResult AddPublicationHouse(PublicationHouseViewModel PublicationHouseViewModel)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    _houseService.Insert(PublicationHouseViewModel);
-                }
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        public ActionResult EditPublicationHouse(int id)
-        {
-            return View(_houseService.GetItem(id));
-        }
-
-        [HttpPost]
-        public ActionResult EditPublicationHouse(PublicationHouseViewModel PublicationHouseViewModel)
-        {
-            try
-            {
-                _houseService.Update(PublicationHouseViewModel);
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        [HttpDelete("{id}")]
-        public IActionResult DeletePublicationHouse([FromRoute] int id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetPublicationHouse([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            PublicationHouseViewModel publicationHouse = _houseService.GetItem(id);
-            if (publicationHouse == null)
+
+            var house = await _houseService.GetItemAsync(id);
+
+            if (house == null)
             {
                 return NotFound();
             }
-            _houseService.Delete(id);
-            return Ok(publicationHouse);
+
+            return Ok(house);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutPublicationHouse([FromRoute] int id, [FromBody] PublicationHouseViewModel house)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != house.Id)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                await _houseService.UpdateAsync(house);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PublicationHouseExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostPublicationHouse([FromBody]PublicationHouseViewModel house)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            await _houseService.InsertAsync(house);
+            return Ok(house);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePublicationHouse([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var house = _houseService.GetItem(id);
+            if (house == null)
+            {
+                return NotFound();
+            }
+            await _houseService.DeleteAsync(id);
+            return Ok(house);
+        }
+
+        private bool PublicationHouseExists(int id)
+        {
+            return _houseService.GetItems().Any(e => e.Id == id);
         }
     }
 }
-
