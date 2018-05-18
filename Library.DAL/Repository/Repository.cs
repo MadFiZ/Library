@@ -12,7 +12,7 @@ namespace Library.DAL.Repository
     public class Repository<T> : IRepository<T> where T : BaseEntity
     {
         protected LibraryContext _context;
-        private DbSet<T> _entities;
+        protected DbSet<T> _entities;
 
         public Repository(LibraryContext context)
         {
@@ -20,7 +20,7 @@ namespace Library.DAL.Repository
             _entities = context.Set<T>();
         }
 
-        public IQueryable<T> GetAll()
+        public virtual IQueryable<T> GetAll()
         {
             try
             {

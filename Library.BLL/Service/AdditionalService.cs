@@ -2,6 +2,7 @@
 using Library.DAL.Interfaces;
 using Library.Models.Models;
 using Library.ViewModels.ViewModels;
+using System.Collections.Generic;
 
 namespace Library.BLL.Service
 {
@@ -16,15 +17,15 @@ namespace Library.BLL.Service
             _houseRepository = houseRepository;
         }
 
-        /*public string GetPublicationHouseNames(ICollection<HouseBookViewModel> publicationHouses)
+        public string GetPublicationHouseNames(ICollection<PublicationHouseViewModel> publicationHouses)
         {
             string houses = string.Empty;
             foreach (var house in publicationHouses)
             {
-                houses += $"{house.PublicationHouse.Name}; ";
+                houses += $"{house.Name}; ";
             }
             return houses;
-        }*/
+        }
 
         /*public IList<PublicationHouseViewModel> GetPublicationHouses(BookViewModel book)
         {

@@ -12,12 +12,21 @@ namespace Library.DAL.Context
 
         public LibraryContext(DbContextOptions<LibraryContext> options)
             : base(options)
-        {}
+        { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-          modelBuilder.Entity<PublicationHouseBooks>()
-        .HasKey(t => new { t.PublicationHouseId, t.BookId });
+            modelBuilder.Entity<PublicationHouseBook>()
+                .HasKey(t => new { t.PublicationHouseId, t.BookId });
+
+            modelBuilder.Entity<PublicationHouseBook>()
+                .HasOne(pt => pt.Book)
+                .WithMany("PublicationHouseBooks");
+
+            modelBuilder.Entity<PublicationHouseBook>()
+                .HasOne(pt => pt.PublicationHouse)
+                .WithMany("PublicationHouseBooks");
+
         }
     }
 }

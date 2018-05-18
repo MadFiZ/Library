@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using AutoMapper;
+using Library.Models.Infrastructure;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace Library.Models.Models
 {
@@ -6,12 +10,13 @@ namespace Library.Models.Models
     {
         public string Adress { get; set; }
 
-        public virtual ICollection<PublicationHouseBooks> Books { get; set; }
+        private ICollection<PublicationHouseBook> PublicationHouseBooks { get; set; } = new List<PublicationHouseBook>();
 
-        public PublicationHouse()
-        {
-            Books = new List<PublicationHouseBooks>();
-        }
+        [NotMapped]
+        [IgnoreMap]
+        public ICollection<Book> Books;
+
+        public PublicationHouse() => Books = new JoinCollectionService<Book, PublicationHouse, PublicationHouseBook>(this, PublicationHouseBooks);
 
         public override string ToString()
         {

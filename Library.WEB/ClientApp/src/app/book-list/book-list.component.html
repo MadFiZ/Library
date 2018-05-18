@@ -6,6 +6,7 @@
       <td>Name</td>
       <td>Author</td>
       <td>Publishing Year</td>
+      <td>Publication Houses</td>
       <td></td>
     </tr>
   </thead>
@@ -15,6 +16,7 @@
         <td>{{b?.name}}</td>
         <td>{{b?.author}}</td>
         <td>{{b?.yearOfPublishing}}</td>
+        <td>{{b?.publicationHouseNames}}</td>
         <td>
           <button class="btn btn-sm btn-primary" (click)="editBook(b)">Edit</button>
           <button class="btn btn-sm btn-danger" (click)="delete(b)">Delete</button>
@@ -36,6 +38,9 @@
     <input type="text" [(ngModel)]="book.yearOfPublishing" class="form-control" />
   </td>
   <td>
+    <input type="text" [(ngModel)]="book.publicationHouseNames" class="form-control" />
+  </td>
+  <td>
     <input type="button" value="Save" (click)="save()" class="btn btn-sm btn-success" />
     <input type="button" value="Cancel" (click)="cancel()" class="btn btn-sm btn-warning" />
   </td>
@@ -54,6 +59,10 @@
   <div class="form-group">
     <label>Publishing Year</label>
     <input type="text" [(ngModel)]="book.yearOfPublishing" class="form-control" />
+  </div>
+  <div class="form-group">
+    <label>Publication Houses</label>
+    <input type="text" [(ngModel)]="book.publicationHouseNames" class="form-control" />
   </div>
   <div>
     <input type="button" value="Save" (click)="save()" class="btn btn-success" />

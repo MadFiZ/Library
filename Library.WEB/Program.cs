@@ -1,3 +1,4 @@
+using Library.BLL.MapperConfig;
 using Library.DAL.Context;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -19,6 +20,7 @@ namespace Library
 
                 try
                 {
+                    AutoMapperConfig.Initialize();
                     Seed.Initialize(services);
                 }
                 catch (Exception ex)

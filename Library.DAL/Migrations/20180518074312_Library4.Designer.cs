@@ -12,9 +12,10 @@ using System;
 namespace Library.DAL.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    partial class LibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20180518074312_Library4")]
+    partial class Library4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,7 +84,7 @@ namespace Library.DAL.Migrations
                     b.ToTable("PublicationHouses");
                 });
 
-            modelBuilder.Entity("Library.Models.Models.PublicationHouseBook", b =>
+            modelBuilder.Entity("Library.Models.Models.PublicationHouseBooks", b =>
                 {
                     b.Property<int>("PublicationHouseId");
 
@@ -93,18 +94,18 @@ namespace Library.DAL.Migrations
 
                     b.HasIndex("BookId");
 
-                    b.ToTable("PublicationHouseBook");
+                    b.ToTable("PublicationHouseBooks");
                 });
 
-            modelBuilder.Entity("Library.Models.Models.PublicationHouseBook", b =>
+            modelBuilder.Entity("Library.Models.Models.PublicationHouseBooks", b =>
                 {
                     b.HasOne("Library.Models.Models.Book", "Book")
-                        .WithMany("PublicationHouseBooks")
+                        .WithMany("PublicationHouses")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Library.Models.Models.PublicationHouse", "PublicationHouse")
-                        .WithMany("PublicationHouseBooks")
+                        .WithMany("Books")
                         .HasForeignKey("PublicationHouseId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

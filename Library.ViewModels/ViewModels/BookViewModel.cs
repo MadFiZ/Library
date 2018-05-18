@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Library.ViewModels.ViewModels
 {
@@ -12,7 +14,12 @@ namespace Library.ViewModels.ViewModels
         [Display(Name = "Year")]
         public int YearOfPublishing { get; set; }
         public string Author { get; set; }
-        /*[Display(Name = "Publication Houses")]
-        public virtual ICollection<HouseBookViewModel> PublicationHouses { get; set; }*/
+        [NotMapped]
+        [IgnoreMap]
+        public List<int> PublicationHouseIds { get; set; }
+        [NotMapped]
+        [IgnoreMap]
+        [Display(Name = "Publication Houses")]
+        public string PublicationHouseNames { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using Library.BLL.Service;
 using Library.DAL.Context;
 using Library.DAL.Interfaces;
 using Library.DAL.Repository;
+using Library.Models.Models;
 using Library.ViewModels.ViewModels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +31,7 @@ namespace Library
 
             services.AddDbContext<LibraryContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LibraryConnection")));
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped(typeof(IRepository<Book>), typeof(BookRepository));
             services.AddTransient<AdditionalService>();
             services.AddTransient<IService<BookViewModel>, BookService>();
             services.AddTransient<IService<BrochureViewModel>, BrochureService>();
@@ -37,7 +39,6 @@ namespace Library
             services.AddTransient<IService<PublicationHouseViewModel>, PublicationHouseService>();
             services.AddTransient<AdditionalService>();
             services.AddTransient<PublicationService>();
-            services.AddAutoMapper();
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

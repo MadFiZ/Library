@@ -1,19 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using AutoMapper;
+using Library.Models.Infrastructure;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace Library.Models.Models
 {
     public class Book : BaseEntity
-    {   
+    {
         public string Author { get; set; }
 
         public int YearOfPublishing { get; set; }
 
-        public virtual ICollection<PublicationHouseBooks> PublicationHouses { get; set; }
+        private ICollection<PublicationHouseBook> PublicationHouseBooks { get; set; } = new List<PublicationHouseBook>();
 
-        public Book()
-        {
-            PublicationHouses = new List<PublicationHouseBooks>();
-        }
+        [NotMapped]
+        [IgnoreMap]
+        public ICollection<PublicationHouse> PublicationHouses;
+
+        public Book() => PublicationHouses = new JoinCollectionService<PublicationHouse, Book, PublicationHouseBook>(this, PublicationHouseBooks);
 
         public override string ToString()
         {
