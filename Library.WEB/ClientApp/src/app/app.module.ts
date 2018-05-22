@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { GridModule } from '@progress/kendo-angular-grid';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
@@ -30,6 +31,7 @@ import { HousesService } from '../app/house-list/houses.service';
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
+    GridModule,
     HttpClientModule,
     FormsModule,
     RouterModule.forRoot([
