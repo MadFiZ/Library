@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { BookService } from '../book-list/book.service';
 import { Book } from "../book-list/book";
+import { SelectHouse } from "../book-list/selecthouse";
 import { State, process } from '@progress/kendo-data-query';
 import { windowProvider } from '../window';
 
@@ -24,7 +25,8 @@ export class BookListComponent implements OnInit {
   public book: Book = new Book();
   public books: Book[];
   public formGroup: FormGroup;
-  private editedRowIndex: number; 
+  private editedRowIndex: number;
+  public houses: SelectHouse[];
 
   public gridState: State = {
     sort: [],
@@ -34,20 +36,26 @@ export class BookListComponent implements OnInit {
 
   public onStateChange(state: State) {
     this.gridState = state;
-
     this.loadBooks();
+    this.loadHouses();
   }
 
   constructor(private bookService: BookService,
     @Inject(windowProvider.provide) private window: Window) { }
 
   ngOnInit() {
-    this.loadBooks();    // загрузка данных при старте компонента  
+    this.loadBooks();
+    this.loadHouses();
   }
 
   loadBooks() {
     this.bookService.getBooks()
       .subscribe((data: Book[]) => this.books = data);
+  }
+
+  loadHouses() {
+    this.bookService.getHouses()
+      .subscribe((data: any[]) => this.houses = data);
   }
   // сохранение данных
   public saveHandler({ sender, rowIndex, formGroup, isNew }): void {

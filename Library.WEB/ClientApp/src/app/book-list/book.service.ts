@@ -2,11 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from "rxjs/Observable";
 import { Book } from './book';
+import { SelectHouse } from './selecthouse'
 
 @Injectable()
 export class BookService {
 
   private url = "/api/books";
+  private url1 = "/api/housevalues"
   private counter: number = this.books.length;
 
   constructor(private http: HttpClient) {
@@ -16,6 +18,13 @@ export class BookService {
     return this.getBooks();
   }
 
+  public houses(): Observable<object> {
+    return this.getHouses();
+  }
+
+  getHouses(): Observable<SelectHouse> {  
+    return this.http.get<SelectHouse[]>(this.url1);
+  }
   getBooks(): Observable<Book[]> {
     return this.http.get<Book[]>(this.url);
   }

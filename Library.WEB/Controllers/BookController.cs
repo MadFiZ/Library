@@ -48,29 +48,8 @@ namespace Library.WEB.Controllers
 
             return Ok(book);
         }
-
-        /*public ActionResult GetBooks()
-        {
-            var data = _bookService.GetItems().OrderByDescending(b => b.Name).Select(b => new
-            {
-                ID = b.Id,
-                b.Name,
-                b.Author,
-                b.YearOfPublishing,
-                PublicationHouses = _additionalService.GetPublicationHouseNames(b.PublicationHouses)
-            }).ToList();
-            return Json(data);
-        }*/
-
-        public ActionResult GetPublicationHouses()
-        {
-            var data = _houseService.GetItems().OrderByDescending(p => p.Name).Select(p => new
-            {
-                p.Id,
-                p.Name
-            }).ToList();
-            return Json(data);
-        }
+        
+       
 
         /*public ActionResult GetBookPublicationHouses(int bookId)
         {

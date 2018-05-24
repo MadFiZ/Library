@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { PopupModule } from '@progress/kendo-angular-popup';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { AppComponent } from './app.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { BookListComponent } from './book-list/book-list.component';
 import { BookService } from '../app/book-list/book.service';
@@ -36,6 +37,7 @@ import { HousesService } from '../app/house-list/houses.service';
     HttpClientModule,
     FormsModule,
     PopupModule,
+    BrowserAnimationsModule,
     DropDownsModule,
     ReactiveFormsModule,
     RouterModule.forRoot([
