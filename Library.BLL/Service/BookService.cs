@@ -52,7 +52,7 @@ namespace Library.BLL.Service
                 foreach (var book in books)
                 {
                     var bookWithHouses = _bookRepository.Get(book.Id);
-                    /*book.PublicationHouseIds.AddRange(GetPublicationHouseIds(bookWithHouses.PublicationHouses));*/
+                    book.PublicationHouseIds = GetPublicationHouseIds(bookWithHouses.PublicationHouses);
                     book.PublicationHouseNames = GetPublicationHouseNames(bookWithHouses.PublicationHouses);
                 }
                 return books;

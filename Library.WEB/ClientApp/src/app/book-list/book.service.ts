@@ -7,8 +7,13 @@ import { Book } from './book';
 export class BookService {
 
   private url = "/api/books";
+  private counter: number = this.books.length;
 
   constructor(private http: HttpClient) {
+  }
+
+  public books(): Observable<Book[]> {
+    return this.getBooks();
   }
 
   getBooks(): Observable<Book[]> {
@@ -16,10 +21,10 @@ export class BookService {
   }
 
   createBook(book: Book) {
+    book.id = this.counter++;
     return this.http.post(this.url, book);
   }
   updateBook(book: Book) {
-
     return this.http.put(this.url + '/' + book.id, book);
   }
   deleteBook(id: number) {

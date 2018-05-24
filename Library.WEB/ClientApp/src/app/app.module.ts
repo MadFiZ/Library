@@ -1,10 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GridModule } from '@progress/kendo-angular-grid';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
-
+import { PopupModule } from '@progress/kendo-angular-popup';
+import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { BookListComponent } from './book-list/book-list.component';
@@ -34,6 +35,9 @@ import { HousesService } from '../app/house-list/houses.service';
     GridModule,
     HttpClientModule,
     FormsModule,
+    PopupModule,
+    DropDownsModule,
+    ReactiveFormsModule,
     RouterModule.forRoot([
       { path: '', component: PublicationListComponent, pathMatch: 'full' },
       { path: 'book-list', component: BookListComponent },

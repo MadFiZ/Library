@@ -1,8 +1,18 @@
 import { Component, OnInit, Inject } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { BookService } from '../book-list/book.service';
 import { Book } from "../book-list/book";
+import { State, process } from '@progress/kendo-data-query';
 import { windowProvider } from '../window';
+
+const createFormGroup = dataItem => new FormGroup({
+  'id': new FormControl(dataItem.id),
+  'name': new FormControl(dataItem.name),
+  'author': new FormControl(dataItem.author),
+  'yearOfPublishing': new FormControl(dataItem.yearOfPublishing),
+  'publicationHouseNames': new FormControl(dataItem.publicationHouseNames)
+});
 
 @Component({
   selector: 'app-book-list',
@@ -11,9 +21,22 @@ import { windowProvider } from '../window';
 })
 export class BookListComponent implements OnInit {
 
-  book: Book = new Book();
+  public book: Book = new Book();
   public books: Book[];
-  tableMode: boolean = true;
+  public formGroup: FormGroup;
+  private editedRowIndex: number; 
+
+  public gridState: State = {
+    sort: [],
+    skip: 0,
+    take: 10
+  };
+
+  public onStateChange(state: State) {
+    this.gridState = state;
+
+    this.loadBooks();
+  }
 
   constructor(private bookService: BookService,
     @Inject(windowProvider.provide) private window: Window) { }
@@ -27,30 +50,56 @@ export class BookListComponent implements OnInit {
       .subscribe((data: Book[]) => this.books = data);
   }
   // сохранение данных
-  save() {
-    if (this.book.id == null) {
+  public saveHandler({ sender, rowIndex, formGroup, isNew }): void {
+
+    this.book = formGroup.value;
+
+    if (isNew) {
       this.bookService.createBook(this.book)
         .subscribe((data: Book) => this.books.push(data));
     } else {
       this.bookService.updateBook(this.book)
         .subscribe(data => this.loadBooks());
     }
-    this.cancel();
+
+    sender.closeRow(rowIndex);
   }
-  editBook(p: Book) {
-    this.book = p;
+
+  public editHandler({ sender, rowIndex, dataItem }) {
+    this.closeEditor(sender);
+
+    this.formGroup = createFormGroup(dataItem);
+
+    this.editedRowIndex = rowIndex;
+
+    sender.editRow(rowIndex, this.formGroup);
   }
-  cancel() {
-    this.book = new Book();
-    this.tableMode = true;
-  }
-  delete(b: Book) {
-    this.bookService.deleteBook(b.id)
+
+  public removeHandler({ dataItem }): void {
+    this.bookService.deleteBook(dataItem.id)
       .subscribe(data => this.loadBooks());
   }
-  add() {
-    this.cancel();
-    this.tableMode = false;
+  public addHandler({ sender }) {
+    this.closeEditor(sender);
+
+    this.formGroup = createFormGroup({
+      'name': '',
+      'author': '',
+      'yearOfPublishing': 0,
+      'publicationHouseNames': ''
+    });
+
+    sender.addRow(this.formGroup);
+  }
+
+  private closeEditor(grid, rowIndex = this.editedRowIndex) {
+    grid.closeRow(rowIndex);
+    this.editedRowIndex = undefined;
+    this.formGroup = undefined;
+  }
+
+  public cancelHandler({ sender, rowIndex }) {
+    this.closeEditor(sender, rowIndex);
   }
 
 }

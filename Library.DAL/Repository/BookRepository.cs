@@ -73,7 +73,7 @@ namespace Library.DAL.Repository
                     book.PublicationHouses.Add(house);
                 }
                 _entities.Add(book);
-                _context.SaveChanges();
+                Save();
             }
             catch (Exception exception)
             {
@@ -90,7 +90,7 @@ namespace Library.DAL.Repository
                     throw new ArgumentNullException("entity");
                 }
                 _entities.Add(bookToAdd);
-                await _context.SaveChangesAsync();
+                await SaveAsync();
                 return true;
             }
             catch (Exception exception)
@@ -117,7 +117,7 @@ namespace Library.DAL.Repository
                         exist.PublicationHouses.Add(house);
                     }
                     _context.Entry(exist).CurrentValues.SetValues(book);
-                    _context.SaveChanges();
+                    Save();
                 }
 
             }
@@ -136,22 +136,20 @@ namespace Library.DAL.Repository
                 {
                     throw new ArgumentNullException("entity");
                 }
-                Book exist = Get(Convert.ToInt32(key));
+                Book exist = Get(book.Id);
+                var houses = book.PublicationHouses;
                 if (exist != null)
-                {
-                    foreach (var property in exist.GetType().GetProperties())
+                { 
+                    foreach (var house in houses)
                     {
-                        if (property.Name != "Id" && !property.GetGetMethod().IsVirtual)
+                        var oldHouse = exist.PublicationHouses.FirstOrDefault(h => h.Id == house.Id);
+                        if (oldHouse == null)
                         {
-                            property.SetValue(exist, property.GetValue(book));
-                        }
+                            exist.PublicationHouses.Add(house);
+                        }    
                     }
-                    exist.PublicationHouses.Clear();
-                    foreach (var house in book.PublicationHouses)
-                    {
-                        exist.PublicationHouses.Add(house);
-                    }
-                    await _context.SaveChangesAsync();
+                    _context.Entry(exist).CurrentValues.SetValues(book);
+                    await SaveAsync();
                 }
                 return true;
             }
@@ -167,7 +165,7 @@ namespace Library.DAL.Repository
             {
                 book.PublicationHouses.Clear();
                 _entities.Remove(book);
-                _context.SaveChanges();
+                Save();
             }
             catch (Exception exception)
             {
@@ -181,7 +179,7 @@ namespace Library.DAL.Repository
             {
                 book.PublicationHouses.Clear();
                 _entities.Remove(book);
-                await _context.SaveChangesAsync();
+                await SaveAsync();
                 return true;
             }
             catch (Exception exception)
