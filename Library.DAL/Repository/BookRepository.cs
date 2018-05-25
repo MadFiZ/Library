@@ -13,7 +13,7 @@ namespace Library.DAL.Repository
     {
         public BookRepository(LibraryContext context) : base(context)
         { }
-             public override IQueryable<Book> GetAll()
+        public override IQueryable<Book> GetAll()
         {
             try
             {
@@ -66,13 +66,7 @@ namespace Library.DAL.Repository
                 {
                     throw new ArgumentNullException("entity");
                 }
-                var book = Get(bookToAdd.Id);
-                book.PublicationHouses.Clear();
-                foreach (var house in bookToAdd.PublicationHouses)
-                {
-                    book.PublicationHouses.Add(house);
-                }
-                _entities.Add(book);
+                _entities.Add(bookToAdd);
                 Save();
             }
             catch (Exception exception)
@@ -108,13 +102,43 @@ namespace Library.DAL.Repository
                 {
                     throw new ArgumentNullException("entity");
                 }
-                Book exist = Get(Convert.ToInt32(key));
+                Book exist = Get(book.Id);
+                var houses = book.PublicationHouses;
+                var existhouses = new List<PublicationHouse>();
+                foreach (var house in exist.PublicationHouses)
+                {
+                    existhouses.Add(house);
+                }
                 if (exist != null)
                 {
-                    exist.PublicationHouses.Clear();
-                    foreach (var house in book.PublicationHouses)
+                    if (existhouses != null)
                     {
-                        exist.PublicationHouses.Add(house);
+                        foreach (var oldHouse in existhouses)
+                        {
+                            var existHouse = book.PublicationHouses.Contains(oldHouse);
+                            if (existHouse == false)
+                            {
+                                exist.PublicationHouses.Remove(oldHouse);
+                            }
+                            if (existHouse == true)
+                            {
+                                houses.Remove(oldHouse);
+                            }
+                        }
+                        if (houses.Count != 0)
+                        {
+                            foreach (var house in houses)
+                            {
+                                exist.PublicationHouses.Add(house);
+                            }
+                        }
+                    }
+                    if (existhouses == null)
+                    {
+                        foreach (var house in houses)
+                        {
+                            exist.PublicationHouses.Add(house);
+                        }
                     }
                     _context.Entry(exist).CurrentValues.SetValues(book);
                     Save();
@@ -138,15 +162,41 @@ namespace Library.DAL.Repository
                 }
                 Book exist = Get(book.Id);
                 var houses = book.PublicationHouses;
+                var existhouses = new List<PublicationHouse>();
+                foreach(var house in exist.PublicationHouses)
+                {
+                    existhouses.Add(house);
+                }
                 if (exist != null)
-                { 
-                    foreach (var house in houses)
+                {
+                    if (existhouses != null)
                     {
-                        var oldHouse = exist.PublicationHouses.FirstOrDefault(h => h.Id == house.Id);
-                        if (oldHouse == null)
+                        foreach (var oldHouse in existhouses)
+                        {
+                            var existHouse = book.PublicationHouses.Contains(oldHouse);
+                            if (existHouse == false)
+                            {
+                                exist.PublicationHouses.Remove(oldHouse);
+                            }
+                            if (existHouse == true)
+                            {
+                                houses.Remove(oldHouse);
+                            }  
+                    }
+                        if (houses.Count != 0)
+                        {
+                            foreach (var house in houses)
+                            {
+                                exist.PublicationHouses.Add(house);
+                            }
+                        }
+                    }
+                    if (existhouses == null)
+                    {
+                        foreach(var house in houses)
                         {
                             exist.PublicationHouses.Add(house);
-                        }    
+                        }
                     }
                     _context.Entry(exist).CurrentValues.SetValues(book);
                     await SaveAsync();

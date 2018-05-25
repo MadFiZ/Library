@@ -1,17 +1,19 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-
+import { Observable } from "rxjs/Observable";
 import { BookService } from '../book-list/book.service';
 import { Book } from "../book-list/book";
 import { SelectHouse } from "../book-list/selecthouse";
 import { State, process } from '@progress/kendo-data-query';
 import { windowProvider } from '../window';
+import { forEach } from '@angular/router/src/utils/collection';
 
 const createFormGroup = dataItem => new FormGroup({
   'id': new FormControl(dataItem.id),
   'name': new FormControl(dataItem.name),
   'author': new FormControl(dataItem.author),
   'yearOfPublishing': new FormControl(dataItem.yearOfPublishing),
+  'publicationHouseIds': new FormControl(dataItem.publicationHouseIds),
   'publicationHouseNames': new FormControl(dataItem.publicationHouseNames)
 });
 
@@ -27,6 +29,8 @@ export class BookListComponent implements OnInit {
   public formGroup: FormGroup;
   private editedRowIndex: number;
   public houses: SelectHouse[];
+  public selectedItems: SelectHouse[];
+  private counter: number;
 
   public gridState: State = {
     sort: [],
@@ -48,19 +52,34 @@ export class BookListComponent implements OnInit {
     this.loadHouses();
   }
 
+  loadSelectedItems(id: number) {
+    this.bookService.getSelectedHouses(id)
+      .subscribe((data: SelectHouse[]) => this.selectedItems = data);
+  }
+
   loadBooks() {
-    this.bookService.getBooks()
+    this.bookService.books()
       .subscribe((data: Book[]) => this.books = data);
   }
 
   loadHouses() {
-    this.bookService.getHouses()
-      .subscribe((data: any[]) => this.houses = data);
+    this.bookService.houses()
+      .subscribe((data: SelectHouse[]) => this.houses = data);
   }
   // сохранение данных
   public saveHandler({ sender, rowIndex, formGroup, isNew }): void {
 
     this.book = formGroup.value;
+    var ids = "";
+    var names = "";
+    for (var _i = 0; _i < this.selectedItems.length; _i++) 
+    {
+      ids += this.selectedItems[_i].id.toString() + " ";
+      names += this.selectedItems[_i].name + " ";
+    }
+
+    this.book.publicationHouseIds = ids;
+    this.book.publicationHouseNames = names;
 
     if (isNew) {
       this.bookService.createBook(this.book)
@@ -73,10 +92,12 @@ export class BookListComponent implements OnInit {
     sender.closeRow(rowIndex);
   }
 
-  public editHandler({ sender, rowIndex, dataItem }) {
+   public editHandler({ sender, rowIndex, dataItem }) {
     this.closeEditor(sender);
 
     this.formGroup = createFormGroup(dataItem);
+     this.book = this.formGroup.value;
+    this.loadSelectedItems(this.book.id);
 
     this.editedRowIndex = rowIndex;
 
@@ -84,16 +105,20 @@ export class BookListComponent implements OnInit {
   }
 
   public removeHandler({ dataItem }): void {
+    this.counter--;
     this.bookService.deleteBook(dataItem.id)
       .subscribe(data => this.loadBooks());
   }
   public addHandler({ sender }) {
     this.closeEditor(sender);
-
+    this.selectedItems = null;
+    this.counter = this.books.length+1;
     this.formGroup = createFormGroup({
+      'id': this.counter++,
       'name': '',
       'author': '',
       'yearOfPublishing': 0,
+      'publicationHouseIds': '',
       'publicationHouseNames': ''
     });
 

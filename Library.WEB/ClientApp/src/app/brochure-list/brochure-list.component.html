@@ -1,62 +1,37 @@
 <h1>Brochure List</h1>
-<input type="button" value="Add" class="btn btn-default" (click)="add()" />
-<table *ngIf="tableMode; else create" class="table table-striped">
-  <thead>
-    <tr>
-      <td>Name</td>
-      <td>Cover</td>
-      <td>Pages</td>
-      <td></td>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let b of brochures">
-      <ng-template [ngIf]="brochure?.id != b.id" [ngIfElse]="edit">
-        <td>{{b?.name}}</td>
-        <td>{{b?.typeOfCover}}</td>
-        <td>{{b?.numberOfPages}}</td>
-        <td>
-          <button class="btn btn-sm btn-primary" (click)="editBrochure(b)">Edit</button>
-          <button class="btn btn-sm btn-danger" (click)="delete(b)">Delete</button>
-        </td>
-      </ng-template>
-    </tr>
-  </tbody>
-</table>
 
-<!--шаблон для редактирования-->
-<ng-template #edit>
-  <td>
-    <input type="text" [(ngModel)]="brochure.name" class="form-control" />
-  </td>
-  <td>
-    <input type="text" [(ngModel)]="brochure.typeOfCover" class="form-control" />
-  </td>
-  <td>
-    <input type="text" [(ngModel)]="brochure.numberOfPages" class="form-control" />
-  </td>
-  <td>
-    <input type="button" value="Save" (click)="save()" class="btn btn-sm btn-success" />
-    <input type="button" value="Cancel" (click)="cancel()" class="btn btn-sm btn-warning" />
-  </td>
-</ng-template>
-
-<!--шаблон для добавления-->
-<ng-template #create>
-  <div class="form-group">
-    <label>Brochure</label>
-    <input type="text" [(ngModel)]="brochure.name" class="form-control" />
-  </div>
-  <div class="form-group">
-    <label>Cover</label>
-    <input type="text" [(ngModel)]="brochure.typeOfCover" class="form-control" />
-  </div>
-  <div class="form-group">
-    <label>Pages</label>
-    <input type="text" [(ngModel)]="brochure.numberOfPages" class="form-control" />
-  </div>
-  <div>
-    <input type="button" value="Save" (click)="save()" class="btn btn-success" />
-    <input type="button" value="Cancel" (click)="cancel()" class="btn btn-warning" />
-  </div>
-</ng-template>
+<kendo-grid [data]="brochures"
+            [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+            [pageable]="true" [sortable]="true"
+            (dataStateChange)="onStateChange($event)"
+            (edit)="editHandler($event)" (cancel)="cancelHandler($event)"
+            (save)="saveHandler($event)" (remove)="removeHandler($event)"
+            (add)="addHandler($event)"
+            [navigable]="true">
+  <ng-template kendoGridToolbarTemplate>
+    <button kendoGridAddCommand>Add new</button>
+  </ng-template>
+  <kendo-grid-column field="name" title="Name"></kendo-grid-column>
+  <kendo-grid-column field="typeOfCover" title="Cover Type">
+    <ng-template kendoGridEditTemplate
+                 let-dataItem="dataItem"
+                 let-column="column"
+                 let-formGroup="formGroup">
+      <kendo-dropdownlist [data]="typesOfCover"
+                          [(ngModel)]="selectedValue"
+                          [textField]="name"
+                          [valueField]="name"
+                          [valuePrimitive]="true">
+      </kendo-dropdownlist>
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column field="numberOfPages" editor="numeric" title="Pages Number"></kendo-grid-column>
+  <kendo-grid-command-column title="Actions">
+    <ng-template kendoGridCellTemplate let-isNew="isNew">
+      <button kendoGridEditCommand [primary]="true">Edit</button>
+      <button kendoGridRemoveCommand>Remove</button>
+      <button kendoGridSaveCommand [disabled]="formGroup?.invalid">{{ isNew ? 'Add' : 'Update' }}</button>
+      <button kendoGridCancelCommand>{{ isNew ? 'Cancel' : 'Discard changes' }}</button>
+    </ng-template>
+  </kendo-grid-command-column>
+</kendo-grid>

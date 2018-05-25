@@ -16,7 +16,7 @@ namespace Library.ViewModels.ViewModels
         public string Author { get; set; }
         [NotMapped]
         [IgnoreMap]
-        public List<int> PublicationHouseIds { get; set; }
+        public string PublicationHouseIds { get; set; }
         [NotMapped]
         [IgnoreMap]
         [Display(Name = "Publication Houses")]

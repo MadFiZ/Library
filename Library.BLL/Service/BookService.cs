@@ -32,12 +32,12 @@ namespace Library.BLL.Service
             return houses;
         }
 
-        private List<int> GetPublicationHouseIds(ICollection<PublicationHouse> publicationHouses)
+        private string GetPublicationHouseIds(ICollection<PublicationHouse> publicationHouses)
         {
-            List<int> housesId = new List<int>();
+           string housesId = string.Empty;
             foreach (var house in publicationHouses)
             {
-                housesId.Add(house.Id);
+                housesId +=$"{house.Id} ";
             }
             return housesId;
         }
@@ -48,7 +48,7 @@ namespace Library.BLL.Service
             {
                 var booksFromDb = _bookRepository.GetAll();
                 var books =
-               Mapper.Map<IEnumerable<Book>, IEnumerable<BookViewModel>>(booksFromDb);
+                Mapper.Map<IEnumerable<Book>, IEnumerable<BookViewModel>>(booksFromDb);
                 foreach (var book in books)
                 {
                     var bookWithHouses = _bookRepository.Get(book.Id);
@@ -70,6 +70,12 @@ namespace Library.BLL.Service
                 var booksFromDb = await _bookRepository.GetAllAsync();
                 var books =
                    Mapper.Map<IEnumerable<Book>, IEnumerable<BookViewModel>>(booksFromDb);
+                foreach (var book in books)
+                {
+                    var bookWithHouses = _bookRepository.Get(book.Id);
+                    book.PublicationHouseIds = GetPublicationHouseIds(bookWithHouses.PublicationHouses);
+                    book.PublicationHouseNames = GetPublicationHouseNames(bookWithHouses.PublicationHouses);
+                }
                 return books;
             }
             catch (Exception exception)
@@ -84,6 +90,8 @@ namespace Library.BLL.Service
             {
                 var bookFromDb = _bookRepository.Get(id);
                 var book = Mapper.Map<Book, BookViewModel>(bookFromDb);
+                book.PublicationHouseIds = GetPublicationHouseIds(bookFromDb.PublicationHouses);
+                book.PublicationHouseNames = GetPublicationHouseNames(bookFromDb.PublicationHouses);
                 return book;
             }
             catch (Exception exception)
@@ -98,6 +106,8 @@ namespace Library.BLL.Service
             {
                 var bookFromDb = await _bookRepository.GetAsync(id);
                 var book = Mapper.Map<Book, BookViewModel>(bookFromDb);
+                book.PublicationHouseIds = GetPublicationHouseIds(bookFromDb.PublicationHouses);
+                book.PublicationHouseNames = GetPublicationHouseNames(bookFromDb.PublicationHouses);
                 return book;
             }
             catch (Exception exception)
@@ -106,7 +116,7 @@ namespace Library.BLL.Service
             }
         }
 
-        private string[] GetPublicationHouses(string publicationHouses)
+        private string[] GetPublicationHousesByIds(string publicationHouses)
         {
             var houses = publicationHouses.Split(' ');
             return houses;
@@ -118,10 +128,13 @@ namespace Library.BLL.Service
             {
                 var bookToAdd = Mapper.Map<BookViewModel, Book>(addBook);
                 var houses = _houseRepository.GetAll().ToList();
-                var housesToAdd = GetPublicationHouses(addBook.PublicationHouseNames);
+                var housesToAdd = GetPublicationHousesByIds(addBook.PublicationHouseIds);
                 foreach (var house in housesToAdd)
                 {
-                    bookToAdd.PublicationHouses.Add(houses.Find(h => h.Name == house));
+                    if (house != "")
+                    {
+                        bookToAdd.PublicationHouses.Add(houses.Find(h => h.Id == Convert.ToInt32(house)));
+                    }
                 }
                 _bookRepository.Add(bookToAdd);
             }
@@ -137,10 +150,13 @@ namespace Library.BLL.Service
             {
                 var bookToAdd = Mapper.Map<BookViewModel, Book>(addBook);
                 var houses = _houseRepository.GetAll().ToList();
-                var housesToAdd = GetPublicationHouses(addBook.PublicationHouseNames);
+                var housesToAdd = GetPublicationHousesByIds(addBook.PublicationHouseIds);
                 foreach (var house in housesToAdd)
                 {
-                    bookToAdd.PublicationHouses.Add(houses.Find(h => h.Name == house));
+                    if (house != "")
+                    {
+                        bookToAdd.PublicationHouses.Add(houses.Find(h => h.Id == Convert.ToInt32(house)));
+                    }
                 }
                 bool success = await _bookRepository.AddAsync(bookToAdd);
                 if (success == true)
@@ -155,16 +171,19 @@ namespace Library.BLL.Service
             }
         }
 
-        public void Update(BookViewModel book)
+        public void Update(BookViewModel updateBook)
         {
             try
             {
-                var bookToUpdate = Mapper.Map<BookViewModel, Book>(book);
+                var bookToUpdate = Mapper.Map<BookViewModel, Book>(updateBook);
                 var houses = _houseRepository.GetAll().ToList();
-                var housesToAdd = GetPublicationHouses(book.PublicationHouseNames);
+                var housesToAdd = GetPublicationHousesByIds(updateBook.PublicationHouseIds);
                 foreach (var house in housesToAdd)
                 {
-                    bookToUpdate.PublicationHouses.Add(houses.Find(h => h.Name == house));
+                    if (house != "")
+                    {
+                        bookToUpdate.PublicationHouses.Add(houses.Find(h => h.Id == Convert.ToInt32(house)));
+                    }
                 }
                 _bookRepository.Update(bookToUpdate, bookToUpdate.Id);
             }
@@ -174,16 +193,19 @@ namespace Library.BLL.Service
             }
         }
 
-        public async Task<bool> UpdateAsync(BookViewModel book)
+        public async Task<bool> UpdateAsync(BookViewModel updateBook)
         {
             try
             {
-                var bookToUpdate = Mapper.Map<BookViewModel, Book>(book);
+                var bookToUpdate = Mapper.Map<BookViewModel, Book>(updateBook);
                 var houses = _houseRepository.GetAll().ToList();
-                var housesToAdd = GetPublicationHouses(book.PublicationHouseNames);
+                var housesToAdd = GetPublicationHousesByIds(updateBook.PublicationHouseIds);
                 foreach (var house in housesToAdd)
                 {
-                    bookToUpdate.PublicationHouses.Add(houses.Find(h => h.Name == house));
+                    if (house != "")
+                    {
+                        bookToUpdate.PublicationHouses.Add(houses.Find(h => h.Id == Convert.ToInt32(house)));
+                    }
                 }
                 bool success = await _bookRepository.UpdateAsync(bookToUpdate, bookToUpdate.Id);
                 if (success == true)
