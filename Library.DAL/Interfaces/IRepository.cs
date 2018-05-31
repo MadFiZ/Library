@@ -11,8 +11,8 @@ namespace Library.DAL.Interfaces
         Task<ICollection<T>> GetAllAsync();
         T Get(int id);
         Task<T> GetAsync(int id);
-        void Add(T entity);
-        Task<bool> AddAsync(T t);
+        int Add(T entity);
+        Task<int> AddAsync(T t);
         void Update(T entity, object key);
         Task<bool> UpdateAsync(T entity, object key);
         void Delete(T entity);

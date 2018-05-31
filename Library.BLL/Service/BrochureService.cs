@@ -76,12 +76,12 @@ namespace Library.BLL.Service
             }
         }
 
-        public void Insert(BrochureViewModel addBrochure)
+        public int Insert(BrochureViewModel addBrochure)
         {
             try
             {
                 var brochureToAdd = Mapper.Map<BrochureViewModel, Brochure>(addBrochure);
-                _brochureRepository.Add(brochureToAdd);
+                return _brochureRepository.Add(brochureToAdd);
             }
             catch (Exception exception)
             {
@@ -89,17 +89,12 @@ namespace Library.BLL.Service
             }
         }
 
-        public async Task<bool> InsertAsync(BrochureViewModel addBrochure)
+        public async Task<int> InsertAsync(BrochureViewModel addBrochure)
         {
             try
             {
                 var brochureToAdd = Mapper.Map<BrochureViewModel, Brochure>(addBrochure);
-                bool success = await _brochureRepository.AddAsync(brochureToAdd);
-                if (success == true)
-                {
-                    return true;
-                }
-                return false;
+                return await _brochureRepository.AddAsync(brochureToAdd);
             }
             catch (Exception exception)
             {

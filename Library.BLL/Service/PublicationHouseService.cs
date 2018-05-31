@@ -76,12 +76,12 @@ namespace Library.BLL.Service
             }
         }
 
-        public void Insert(PublicationHouseViewModel addPublicationHouse)
+        public int Insert(PublicationHouseViewModel addPublicationHouse)
         {
             try
             {
                 var houseToAdd = Mapper.Map<PublicationHouseViewModel, PublicationHouse>(addPublicationHouse);
-                _houseRepository.Add(houseToAdd);
+                return _houseRepository.Add(houseToAdd);
             }
             catch (Exception exception)
             {
@@ -89,17 +89,12 @@ namespace Library.BLL.Service
             }
         }
 
-        public async Task<bool> InsertAsync(PublicationHouseViewModel addPublicationHouse)
+        public async Task<int> InsertAsync(PublicationHouseViewModel addPublicationHouse)
         {
             try
             {
                 var houseToAdd = Mapper.Map<PublicationHouseViewModel, PublicationHouse>(addPublicationHouse);
-                bool success = await _houseRepository.AddAsync(houseToAdd);
-                if (success == true)
-                {
-                    return true;
-                }
-                return false;
+                return await _houseRepository.AddAsync(houseToAdd);
             }
             catch (Exception exception)
             {

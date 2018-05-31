@@ -76,12 +76,12 @@ namespace Library.BLL.Service
             }
         }
 
-        public void Insert(MagazineViewModel addMagazine)
+        public int Insert(MagazineViewModel addMagazine)
         {
             try
             {
                 var magazineToAdd = Mapper.Map<MagazineViewModel, Magazine>(addMagazine);
-                _magazineRepository.Add(magazineToAdd);
+                return _magazineRepository.Add(magazineToAdd);
             }
             catch (Exception exception)
             {
@@ -89,17 +89,12 @@ namespace Library.BLL.Service
             }
         }
 
-        public async Task<bool> InsertAsync(MagazineViewModel addMagazine)
+        public async Task<int> InsertAsync(MagazineViewModel addMagazine)
         {
             try
             {
                 var magazineToAdd = Mapper.Map<MagazineViewModel, Magazine>(addMagazine);
-                bool success = await _magazineRepository.AddAsync(magazineToAdd);
-                if (success == true)
-                {
-                    return true;
-                }
-                return false;
+                return await _magazineRepository.AddAsync(magazineToAdd);
             }
             catch (Exception exception)
             {

@@ -58,7 +58,7 @@ namespace Library.DAL.Repository
             }
         }
 
-        public override void Add(Book bookToAdd)
+        public override int Add(Book bookToAdd)
         {
             try
             {
@@ -68,6 +68,7 @@ namespace Library.DAL.Repository
                 }
                 _entities.Add(bookToAdd);
                 Save();
+                return bookToAdd.Id;
             }
             catch (Exception exception)
             {
@@ -75,7 +76,7 @@ namespace Library.DAL.Repository
             }
         }
 
-        public override async Task<bool> AddAsync(Book bookToAdd)
+        public override async Task<int> AddAsync(Book bookToAdd)
         {
             try
             {
@@ -85,7 +86,7 @@ namespace Library.DAL.Repository
                 }
                 _entities.Add(bookToAdd);
                 await SaveAsync();
-                return true;
+                return bookToAdd.Id;
             }
             catch (Exception exception)
             {

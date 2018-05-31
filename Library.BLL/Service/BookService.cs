@@ -122,7 +122,7 @@ namespace Library.BLL.Service
             return houses;
         }
 
-        public void Insert(BookViewModel addBook)
+        public int Insert(BookViewModel addBook)
         {
             try
             {
@@ -136,7 +136,7 @@ namespace Library.BLL.Service
                         bookToAdd.PublicationHouses.Add(houses.Find(h => h.Id == Convert.ToInt32(house)));
                     }
                 }
-                _bookRepository.Add(bookToAdd);
+                return _bookRepository.Add(bookToAdd);
             }
             catch (Exception exception)
             {
@@ -144,7 +144,7 @@ namespace Library.BLL.Service
             }
         }
 
-        public async Task<bool> InsertAsync(BookViewModel addBook)
+        public async Task<int> InsertAsync(BookViewModel addBook)
         {
             try
             {
@@ -158,12 +158,7 @@ namespace Library.BLL.Service
                         bookToAdd.PublicationHouses.Add(houses.Find(h => h.Id == Convert.ToInt32(house)));
                     }
                 }
-                bool success = await _bookRepository.AddAsync(bookToAdd);
-                if (success == true)
-                {
-                    return true;
-                }
-                return false;
+                return await _bookRepository.AddAsync(bookToAdd);
             }
             catch (Exception exception)
             {

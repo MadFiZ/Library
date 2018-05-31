@@ -97,7 +97,7 @@ namespace Library.WEB.Controllers
             {
                 return BadRequest(ModelState);
             }
-            await _bookService.InsertAsync(book);
+            book.Id = await _bookService.InsertAsync(book);
             return Ok(book);
         }
 

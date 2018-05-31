@@ -30,7 +30,6 @@ export class BookListComponent implements OnInit {
   private editedRowIndex: number;
   public houses: SelectHouse[];
   public selectedItems: SelectHouse[];
-  private counter: number;
 
   public gridState: State = {
     sort: [],
@@ -80,7 +79,6 @@ export class BookListComponent implements OnInit {
 
     this.book.publicationHouseIds = ids;
     this.book.publicationHouseNames = names;
-
     if (isNew) {
       this.bookService.createBook(this.book)
         .subscribe((data: Book) => this.books.push(data));
@@ -105,16 +103,14 @@ export class BookListComponent implements OnInit {
   }
 
   public removeHandler({ dataItem }): void {
-    this.counter--;
     this.bookService.deleteBook(dataItem.id)
       .subscribe(data => this.loadBooks());
   }
   public addHandler({ sender }) {
     this.closeEditor(sender);
     this.selectedItems = null;
-    this.counter = this.books.length+1;
     this.formGroup = createFormGroup({
-      'id': this.counter++,
+      'id': 0,
       'name': '',
       'author': '',
       'yearOfPublishing': 0,

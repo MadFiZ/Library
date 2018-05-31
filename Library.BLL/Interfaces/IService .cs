@@ -9,10 +9,10 @@ namespace Library.BLL.Interfaces
         Task<IEnumerable<T>> GetItemsAsync();
         T GetItem(int id);
         Task<T> GetItemAsync(int id);
-        void Insert(T item);
+        int Insert(T item);
         void Update(T item);
         void Delete(int id);
-        Task<bool> InsertAsync(T item);
+        Task<int> InsertAsync(T item);
         Task<bool> UpdateAsync(T item);
         Task<bool> DeleteAsync(int id);
     }

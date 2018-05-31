@@ -68,7 +68,7 @@ namespace Library.DAL.Repository
             }
         }
 
-        public virtual void Add(T entity)
+        public virtual int Add(T entity)
         {
             try
             {
@@ -78,6 +78,7 @@ namespace Library.DAL.Repository
                 }
                 _entities.Add(entity);
                 _context.SaveChanges();
+                return entity.Id;
             }
             catch (Exception exception)
             {
@@ -85,13 +86,13 @@ namespace Library.DAL.Repository
             }
         }
 
-        public virtual async Task<bool> AddAsync(T entity)
+        public virtual async Task<int> AddAsync(T entity)
         {
             try
             {
                 _entities.Add(entity);
                 await _context.SaveChangesAsync();
-                return true;
+                return entity.Id;
             }
             catch (Exception exception)
             {
